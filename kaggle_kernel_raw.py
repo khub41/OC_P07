@@ -372,4 +372,4 @@ def main(debug=False):
 if __name__ == "__main__":
     submission_file_name = "submission_kernel02.csv"
     with timer("Full model run"):
-        main()
+        df = main()
