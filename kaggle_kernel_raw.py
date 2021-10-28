@@ -16,13 +16,14 @@
 # - Added Payment Rate feature
 # - Removed index from features
 # - Use standard KFold CV (not stratified)
+import re
 
 import numpy as np
 import pandas as pd
 import gc
 import time
 from contextlib import contextmanager
-# from lightgbm import LGBMClassifier
+from lightgbm import LGBMClassifier
 from sklearn.metrics import roc_auc_score, roc_curve
 from sklearn.model_selection import KFold, StratifiedKFold
 import matplotlib.pyplot as plt
@@ -365,11 +366,13 @@ def main(debug=False):
         del cc
         gc.collect()
     # with timer("Run LightGBM with kfold"):
-    #     feat_importance = kfold_lightgbm(df, num_folds=10, stratified=False, debug=debug)
+    #
+    #     df = df.rename(columns=lambda x: re.sub('[^A-Za-z0-9_]+', '', x))
+        feat_importance = kfold_lightgbm(df, num_folds=10, stratified=False, debug=debug)
     return df
 
 
 if __name__ == "__main__":
-    submission_file_name = "submission_kernel02.csv"
+    submission_file_name = "data/submission_kernel02.csv"
     with timer("Full model run"):
         df = main()
