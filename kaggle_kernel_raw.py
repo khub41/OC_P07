@@ -365,9 +365,9 @@ def main(debug=False):
         df = df.join(cc, how='left', on='SK_ID_CURR')
         del cc
         gc.collect()
-    # with timer("Run LightGBM with kfold"):
-    #
-    #     df = df.rename(columns=lambda x: re.sub('[^A-Za-z0-9_]+', '', x))
+    with timer("Run LightGBM with kfold"):
+
+        df = df.rename(columns=lambda x: re.sub('[^A-Za-z0-9_]+', '', x))
         feat_importance = kfold_lightgbm(df, num_folds=10, stratified=False, debug=debug)
     return df
 
