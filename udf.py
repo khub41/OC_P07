@@ -1,4 +1,5 @@
 import time
+import random
 
 import matplotlib.pyplot as plt
 import mlflow
@@ -7,6 +8,8 @@ from sklearn.cluster import KMeans, DBSCAN
 from sklearn.decomposition import PCA
 from sklearn.metrics import davies_bouldin_score, silhouette_score
 from sklearn.preprocessing import StandardScaler
+from sklearn.manifold import TSNE
+from imblearn.over_sampling import SMOTE
 import pandas as pd
 
 from contextlib import contextmanager
@@ -99,3 +102,42 @@ def train_dbscan(data, run_name):
 
         mlflow.end_run()
     return data_train
+
+
+def train_tsne(data, labels, perplexity=50, learning_rate=200, show=True, savefig=False):
+    tsne = TSNE(init='random', random_state=41, n_jobs=-1, perplexity=perplexity, learning_rate=learning_rate)
+    data_tsne = tsne.fit_transform(data)
+    df_data_tsne_labels = pd.DataFrame(data_tsne, columns=['x', 'y']).merge(labels, left_index=True, right_index=True)
+    # colors = ['b', 'g', 'r', 'c', 'm', 'y', 'k']
+    if len(labels.unique()) == 1:
+        colors = ['b']
+    else:
+        number_of_colors = len(labels.unique())
+
+        colors = ["#" + ''.join([random.choice('0123456789ABCDEF') for j in range(6)])
+                  for i in range(number_of_colors)]
+    if show:
+        plt.style.use('seaborn')
+        plt.figure(figsize=(8, 8))
+        plt.axis('equal')
+        for label, color in zip(labels.unique(), colors):
+            group = df_data_tsne_labels[df_data_tsne_labels[labels.name] == label]
+            plt.scatter(group.x,
+                        group.y,
+                        label=label,
+                        color=color,
+                        s=6)
+        plt.legend()
+        plt.show=()
+        if savefig:
+            plt.savefig('plots/{}.png'.format(savefig), bbox_inches='tight', dpi=720)
+
+    return data_tsne
+
+def over_sample(data, labels, random_state=41):
+    smote_sampler = SMOTE(random_state=random_state)
+    data_res, labels_res = smote_sampler.fit_resample(data, labels)
+    return data_res, labels_res
+
+
+
