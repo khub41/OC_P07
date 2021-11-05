@@ -50,11 +50,6 @@ with timer('import data'):
 
 data_full = data_full.sample(1000)
 
-
-# with timer('getting good clients'):
-#     data_full = data_full[data_full.TARGET == 0]
-#     print(data_full.shape)
-
 with timer('getting training set'):
     data_full = data_full[data_full.TARGET.isin([1, 0])]
     print(data_full.shape)
@@ -84,23 +79,7 @@ with timer('scaling'):
 with timer('reducing dim with pca'):
     data_full_scale, pca_fitted = reduce_dim_pca(data_full_scale, 500)
 
-# with timer('train KMEANS'):
-#     tuning_kmeans(data_full_scale.sample(int(50e3), random_state=41),
-#                   list(range(2, 10)),
-#                   'kmeans_balance',
-#                   3,
-#                   100,
-#                   run_name='tuning sample 50k 400comp')
 
-# with timer('train dbscan'):
-#     train_dbscan(data_full_scale, 'full rows 400comp')
-
-# with timer('tsne'):
-#     train_tsne(data_full_scale.sample(frac=0.5, random_state=41),
-#                pd.Series(["'Good' clients"] * len(data_full_scale),
-#                          name='label'),
-#                savefig='tsne_negatives_50pct_rs41')
-#
 
 with timer('over sampling'):
     data_resampled, labels_resampled = over_sample(data_full_scale, labels)
