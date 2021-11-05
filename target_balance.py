@@ -48,7 +48,7 @@ def handle_missing_values(data, mode=None):
 with timer('import data'):
     data_full = pd.read_csv("data/data_full.csv", index_col=[0])
 
-data_full = data_full.sample(1000)
+# data_full = data_full.sample(1000)
 
 
 # with timer('getting good clients'):
@@ -56,7 +56,7 @@ data_full = data_full.sample(1000)
 #     print(data_full.shape)
 
 with timer('getting training set'):
-    data_full = data_full[~data_full.isnull()]
+    data_full = data_full[data_full.TARGET.isin([1, 0])]
     print(data_full.shape)
 
 labels = data_full.TARGET
@@ -104,3 +104,6 @@ with timer('reducing dim with pca'):
 
 with timer('over sampling'):
     data_resampled, labels_resampled = over_sample(data_full_scale, labels)
+
+data_resampled['TARGET'] = labels_resampled
+data_resampled.to_csv('data/data_scale_filled_balanced.csv')

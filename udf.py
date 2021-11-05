@@ -6,11 +6,18 @@ import mlflow
 import numpy as np
 from sklearn.cluster import KMeans, DBSCAN
 from sklearn.decomposition import PCA
-from sklearn.metrics import davies_bouldin_score, silhouette_score
+from sklearn.metrics import davies_bouldin_score, silhouette_score, confusion_matrix, classification_report
 from sklearn.preprocessing import StandardScaler
 from sklearn.manifold import TSNE
 from imblearn.over_sampling import SMOTE
 import pandas as pd
+import mlflow
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.dummy import DummyClassifier
+
+
+
 
 from contextlib import contextmanager
 
@@ -139,5 +146,15 @@ def over_sample(data, labels, random_state=41):
     data_res, labels_res = smote_sampler.fit_resample(data, labels)
     return data_res, labels_res
 
+# MODELING FUNCTIONS
 
+def get_naive_baseline(data_train, data_test, labels_train, labels_test):
+    dum_clf = DummyClassifier(strategy="uniform")
+
+    dum_clf.fit(data_train, labels_train)
+    labels_pred = dum_clf.predict(data_test)
+
+    confusion_matrix(labels_test, labels_pred)
+    confusion_matrix(labels_test, labels_pred)
+    # return dummy_scores
 
