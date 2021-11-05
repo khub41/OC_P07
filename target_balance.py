@@ -48,7 +48,7 @@ def handle_missing_values(data, mode=None):
 with timer('import data'):
     data_full = pd.read_csv("data/data_full.csv", index_col=[0])
 
-# data_full = data_full.sample(1000)
+data_full = data_full.sample(1000)
 
 
 # with timer('getting good clients'):
