@@ -80,7 +80,6 @@ with timer('reducing dim with pca'):
     data_full_scale, pca_fitted = reduce_dim_pca(data_full_scale, 500)
 
 
-
 with timer('over sampling'):
     data_resampled, labels_resampled = over_sample(data_full_scale, labels)
 
