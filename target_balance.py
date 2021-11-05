@@ -51,15 +51,11 @@ with timer('import data'):
 data_full = data_full.sample(1000)
 
 
-# with timer('getting good clients'):
-#     data_full = data_full[data_full.TARGET == 0]
-#     print(data_full.shape)
-
-with timer('getting training set'):
-    data_full = data_full[data_full.TARGET.isin([1, 0])]
+with timer('getting good clients'):
+    data_full = data_full[data_full.TARGET == 0]
     print(data_full.shape)
 
-labels = data_full.TARGET
+
 
 # Let's try to understand better the problem here:
 # Only 8% of the training data set has a positive target
@@ -78,32 +74,27 @@ with timer('missing values'):
 with timer('scaling'):
     data_full_scale, scaler = scale_data(data_full.drop(columns=['TARGET', 'SK_ID_CURR', 'SK_ID_BUREAU', 'SK_ID_PREV', 'index'],
                                                         errors='ignore'))
-# with timer('computing pca opti'):
-#     scree_plot(data_full_scale, data_full_scale.shape[1], savefig='scree_plot')
+with timer('computing pca opti'):
+    scree_plot(data_full_scale, data_full_scale.shape[1], savefig='scree_plot')
 
 with timer('reducing dim with pca'):
     data_full_scale, pca_fitted = reduce_dim_pca(data_full_scale, 500)
 
-# with timer('train KMEANS'):
-#     tuning_kmeans(data_full_scale.sample(int(50e3), random_state=41),
-#                   list(range(2, 10)),
-#                   'kmeans_balance',
-#                   3,
-#                   100,
-#                   run_name='tuning sample 50k 400comp')
+with timer('train KMEANS'):
+    tuning_kmeans(data_full_scale.sample(int(50e3), random_state=41),
+                  list(range(2, 10)),
+                  'kmeans_balance',
+                  3,
+                  100,
+                  run_name='tuning sample 50k 400comp')
 
-# with timer('train dbscan'):
-#     train_dbscan(data_full_scale, 'full rows 400comp')
+with timer('train dbscan'):
+    train_dbscan(data_full_scale, 'full rows 400comp')
 
-# with timer('tsne'):
-#     train_tsne(data_full_scale.sample(frac=0.5, random_state=41),
-#                pd.Series(["'Good' clients"] * len(data_full_scale),
-#                          name='label'),
-#                savefig='tsne_negatives_50pct_rs41')
+with timer('tsne'):
+    train_tsne(data_full_scale.sample(frac=0.5, random_state=41),
+               pd.Series(["'Good' clients"] * len(data_full_scale),
+                         name='label'),
+               savefig='tsne_negatives_50pct_rs41')
 #
 
-with timer('over sampling'):
-    data_resampled, labels_resampled = over_sample(data_full_scale, labels)
-
-data_resampled['TARGET'] = labels_resampled
-data_resampled.to_csv('data/data_scale_filled_balanced.csv')
