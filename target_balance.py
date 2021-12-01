@@ -42,7 +42,7 @@ with timer('scaling'):
 #     data_full_scale, pca_fitted = reduce_dim_pca(data_full_scale, 500)
 
 with timer('split data'):
-    data_train, data_test, labels_train, labels_test = train_test_split(data_full_scale, labels_full, test_size=0.33,
+    data_train, data_test, labels_train, labels_test = train_test_split(data_full_scale, labels_full, test_size=0.30,
                                                                         random_state=41)
 
 with timer('curve fit'):
@@ -51,10 +51,13 @@ with timer('curve fit'):
 
 with timer('Re sampling'):
     # Under sampling
-    data_full_resampled, labels_full_resampled = re_sample(data_full_scale,
-                                                           labels_full,
-                                                           RandomUnderSampler,
-                                                           params={'sampling_strategy': 0.5,
-                                                                   'random_state': 41})
-data_full_resampled['TARGET'] = labels_full_resampled
-# data_full_resampled.to_csv('data/resampled_5_scale.csv')
+    data_train_resampled, labels_train_resampled = re_sample(data_train,
+                                                             labels_train,
+                                                             RandomUnderSampler,
+                                                             params={'sampling_strategy': 0.5,
+                                                                     'random_state': 41})
+data_train_resampled['TARGET'] = labels_train_resampled
+data_train_resampled.to_csv('data/data_train_scaled_resampled_5.csv')
+
+data_test['TARGET'] = labels_test
+data_test.to_csv("data/data_test_scale")
