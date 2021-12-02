@@ -60,4 +60,4 @@ data_train_resampled['TARGET'] = labels_train_resampled
 data_train_resampled.to_csv('data/data_train_scaled_resampled_5.csv')
 
 data_test['TARGET'] = labels_test
-data_test.to_csv("data/data_test_scale")
+# data_test.to_csv("data/data_test_scaled.csv")
