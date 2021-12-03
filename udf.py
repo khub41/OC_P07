@@ -14,7 +14,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.impute import KNNImputer, SimpleImputer
 from sklearn.manifold import TSNE
-from sklearn.metrics import davies_bouldin_score, silhouette_score, f1_score
+from sklearn.metrics import davies_bouldin_score, silhouette_score, f1_score, confusion_matrix
 from sklearn.model_selection import GridSearchCV, cross_validate
 from sklearn.preprocessing import StandardScaler
 
@@ -381,11 +381,11 @@ def compute_loss(row, data_appli):
     amount_credit = data_appli.loc[row.name].AMT_CREDIT
 
     if row.decision_quali == 'BPA':
-        return - 0.015 * amount_credit
+        return - 0.15 * amount_credit
     elif row.decision_quali == 'BPE':
-        return 0.015 * amount_credit
+        return 0.15 * amount_credit
     elif row.decision_quali == 'MPA':
-        return 0.5 * amount_credit
+        return 0.8 * amount_credit
     elif row.decision_quali == 'MPE':
         return 0
     else:
@@ -401,4 +401,21 @@ def loss_score(labels_true, labels_pred, data_appli_test=None):
 
     return labels_df.loss.sum()
 
+def determine_threshold(model, data_test, labels_test, range_thresh, data_appli):
 
+    labels_preds_df = pd.DataFrame(model.predict_proba(data_test), index=data_test.index)
+    labels_preds_df['label_true'] = labels_test.values
+    losses = {}
+    confusion_matrices = {}
+    for threshold in range_thresh:
+
+        labels_preds_df[f'pred_thresh_{threshold}'] = labels_preds_df[1] > threshold
+        labels_preds_df[f'pred_thresh_{threshold}'].replace(True, 1.0)
+        labels_preds_df[f'pred_thresh_{threshold}'].replace(False, 0.0)
+        losses[threshold] = loss_score(labels_preds_df['label_true'],
+                                       labels_preds_df[f'pred_thresh_{threshold}'],
+                                       data_appli_test=data_appli)
+        conf_mat = confusion_matrix(labels_preds_df['label_true'],
+                                       labels_preds_df[f'pred_thresh_{threshold}'], normalize='true')
+        confusion_matrices[threshold] = conf_mat
+    return pd.Series(losses), confusion_matrices
