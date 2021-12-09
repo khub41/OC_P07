@@ -383,7 +383,7 @@ def compute_loss(row, data_appli):
     if row.decision_quali == 'BPA':
         return - 0.15 * amount_credit
     elif row.decision_quali == 'BPE':
-        return 0.15 * amount_credit
+        return 0
     elif row.decision_quali == 'MPA':
         return 0.8 * amount_credit
     elif row.decision_quali == 'MPE':
