@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import shap
 
 logged_model = 'runs:/a4a40c98e82c4913a6e66558e4665c94/best_model'
-shap.initjs()
+# shap.initjs()
 data_test = pd.read_csv("data/data_test_scaled.csv", index_col=[0])
 
 data_test = data_test.sample(100, random_state=41)
@@ -60,7 +60,7 @@ def get_explanation(id_client, model, strategy='normal'):
                                    inplace=True)
     return explanation_client
 
-client_decision_explained = get_explanation(data_test.index[0], best_model_mlflow, strategy='normal')
+client_decision_explained = get_explanation(200999, best_model_mlflow, strategy='normal')
 
 
 
@@ -71,7 +71,7 @@ client_decision_explained = get_explanation(data_test.index[0], best_model_mlflo
 
 
 # X = data_test[features_names].rename(columns=dictionnaire_features)
-
+#
 # shap_values_single = shap_kernel_explainer.shap_values(X.loc[id_mut_force_plot,:])
 # plt.style.use('default') # Pour avoir le format standard matplolib (sinon une grille apparait)
 # shap_values_single = shap_kernel_explainer.shap_values(X.loc[id_mut_force_plot,:])
