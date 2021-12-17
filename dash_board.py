@@ -1,5 +1,6 @@
+import joblib
 import pandas as pd
-import mlflow
+
 import streamlit as st
 import shap
 
@@ -17,8 +18,8 @@ def load_raw_data():
     return pd.read_csv("data/data_full.csv", index_col=[0]).set_index('SK_ID_CURR')
 
 
-model_path = 'runs:/a4a40c98e82c4913a6e66558e4665c94/best_model'
-model = mlflow.sklearn.load_model(model_path)
+# model_path = 'runs:/a4a40c98e82c4913a6e66558e4665c94/best_model'
+model = joblib.load("model.pkl")
 
 
 # Create a text element and let the reader know the data is loading.
