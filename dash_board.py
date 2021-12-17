@@ -14,7 +14,7 @@ st.set_page_config(layout="wide")
 @st.cache
 def load_scaled_data():
     with fs.open('homecreditdata/data_test_scaled.csv') as file:
-        return pd.read_csv(file, index_col=[0]).drop(columns=["TARGET"], nrows=1000)
+        return pd.read_csv(file, index_col=[0], nrows=1000).drop(columns=["TARGET"])
     # return pd.read_csv("data/sample_test_scaled.csv", index_col=[0]).drop(columns=["TARGET"])
 
 
