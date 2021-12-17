@@ -110,7 +110,7 @@ with col_score:
 
 with col_explanation:
     st.header("Explication")
-    st.caption("Les variables bleues font baisser le risque, les rouges l'augmente!")
+    st.caption("Les variables vertes font baisser le risque, les rouges l'augmentent!")
 
     explainer = shap.TreeExplainer(model)
 
