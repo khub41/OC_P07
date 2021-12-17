@@ -1,60 +1,22 @@
-import time
-
 import pandas as pd
-import numpy as np
-from udf import scale_data, scree_plot, reduce_dim_pca, tuning_kmeans, timer, train_dbscan, train_tsne, over_sample
-from sklearn.impute import KNNImputer, SimpleImputer
+from imblearn.under_sampling import RandomUnderSampler
+from sklearn.model_selection import train_test_split
 
-
-def handle_infinite_values(data):
-    """
-    for the columns containing inf data we replace it by the highest value in the column that is not inf
-    :param data:
-    :return: data with no inf values
-    """
-    data_local = data.copy()
-    maxes = data_local.max()
-    id_inf_cols = maxes[maxes == np.inf].index
-    for id_inf_col in id_inf_cols:
-        inf_col = data_local[id_inf_col]
-        max_except_inf = inf_col[(inf_col.notnull()) & (inf_col != np.inf)].max()
-        try:
-            data_local[id_inf_col].replace(np.inf, max_except_inf, inplace=True)
-        except KeyError as e:
-            pass
-
-    return data_local
-
-# Let's handle the missing values
-def handle_missing_values(data, mode=None):
-    if mode is None:
-        mode = 'knn'
-    if mode == 'knn':
-        imputer = KNNImputer(n_neighbors=3)
-        data_filled = pd.DataFrame(imputer.fit_transform(data),
-                     index=data.index,
-                     columns=data.columns)
-    elif mode == 'simple':
-        imputer = SimpleImputer(strategy='median')
-        data_filled = pd.DataFrame(imputer.fit_transform(data),
-                                   index=data.index,
-                                   columns=data.columns)
-    else :
-        print("Mode is not conform, returning unfilled dataset")
-        return data
-    return data_filled
-
+from udf import scale_data, timer, re_sample, handle_infinite_values, handle_missing_values
 
 with timer('import data'):
     data_full = pd.read_csv("data/data_full.csv", index_col=[0])
 
-# data_full = data_full.sample(1000)
 
+# data_full = data_full.sample(50000)
 
-with timer('getting good clients'):
-    data_full = data_full[data_full.TARGET == 0]
+with timer('getting training set'):
+    data_full = data_full[data_full.TARGET.isin([1, 0])]
+    data_full = data_full.set_index('SK_ID_CURR')
+    labels_full = data_full.TARGET
+    data_full.drop(columns=['TARGET'], inplace=True)
+
     print(data_full.shape)
-
 
 
 # Let's try to understand better the problem here:
@@ -72,29 +34,34 @@ with timer('missing values'):
     data_full = handle_missing_values(data_full, mode='simple')
 
 with timer('scaling'):
-    data_full_scale, scaler = scale_data(data_full.drop(columns=['TARGET', 'SK_ID_CURR', 'SK_ID_BUREAU', 'SK_ID_PREV', 'index'],
+    data_full_scale, scaler = scale_data(data_full.drop(columns=['SK_ID_BUREAU', 'SK_ID_PREV', 'index'],
                                                         errors='ignore'))
-with timer('computing pca opti'):
-    scree_plot(data_full_scale, data_full_scale.shape[1], savefig='scree_plot')
 
-with timer('reducing dim with pca'):
-    data_full_scale, pca_fitted = reduce_dim_pca(data_full_scale, 500)
 
-with timer('train KMEANS'):
-    tuning_kmeans(data_full_scale.sample(int(50e3), random_state=41),
-                  list(range(2, 10)),
-                  'kmeans_balance',
-                  3,
-                  100,
-                  run_name='tuning sample 50k 400comp')
+# with timer('computing pca opti'):
+#     scree_plot(data_full_scale, data_full_scale.shape[1], savefig='scree_plot')
 
-with timer('train dbscan'):
-    train_dbscan(data_full_scale, 'full rows 400comp')
+# with timer('reducing dim with pca'):
+#     data_full_scale, pca_fitted = reduce_dim_pca(data_full_scale, 500)
 
-with timer('tsne'):
-    train_tsne(data_full_scale.sample(frac=0.5, random_state=41),
-               pd.Series(["'Good' clients"] * len(data_full_scale),
-                         name='label'),
-               savefig='tsne_negatives_50pct_rs41')
-#
+with timer('split data'):
+    data_train, data_test, labels_train, labels_test = train_test_split(data_full_scale, labels_full, test_size=0.30,
+                                                                        random_state=41)
+
+with timer('curve fit'):
+    # plot_perf_balancing_strategy(data_train, labels_train, data_test, labels_test, savefig='undersampling_strategies')
+    pass
+
+with timer('Re sampling'):
+    # Under sampling
+    data_train_resampled, labels_train_resampled = re_sample(data_train,
+                                                             labels_train,
+                                                             RandomUnderSampler,
+                                                             params={'sampling_strategy': 0.5,
+                                                                     'random_state': 41})
+data_train_resampled['TARGET'] = labels_train_resampled
+data_train_resampled.to_csv('data/data_train_scaled_resampled_5.csv')
+
+data_test['TARGET'] = labels_test
+# data_test.to_csv("data/data_test_scaled.csv")
 
