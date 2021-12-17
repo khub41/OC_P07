@@ -7,6 +7,7 @@ from udf import scale_data, timer, re_sample, handle_infinite_values, handle_mis
 with timer('import data'):
     data_full = pd.read_csv("data/data_full.csv", index_col=[0])
 
+
 # data_full = data_full.sample(50000)
 
 with timer('getting training set'):
@@ -16,6 +17,7 @@ with timer('getting training set'):
     data_full.drop(columns=['TARGET'], inplace=True)
 
     print(data_full.shape)
+
 
 # Let's try to understand better the problem here:
 # Only 8% of the training data set has a positive target
@@ -34,6 +36,7 @@ with timer('missing values'):
 with timer('scaling'):
     data_full_scale, scaler = scale_data(data_full.drop(columns=['SK_ID_BUREAU', 'SK_ID_PREV', 'index'],
                                                         errors='ignore'))
+
 
 # with timer('computing pca opti'):
 #     scree_plot(data_full_scale, data_full_scale.shape[1], savefig='scree_plot')
@@ -61,3 +64,4 @@ data_train_resampled.to_csv('data/data_train_scaled_resampled_5.csv')
 
 data_test['TARGET'] = labels_test
 # data_test.to_csv("data/data_test_scaled.csv")
+
