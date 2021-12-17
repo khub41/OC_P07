@@ -3,7 +3,7 @@ import pandas as pd
 import s3fs
 import streamlit as st
 import shap
-
+import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 
@@ -171,12 +171,14 @@ st.subheader(f"{var_comparaison}={var_comparaison_value}")
 if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
 fig_comparaison = px.histogram(data_raw[var_comparaison])
-fig_comparaison.add_vline(var_comparaison_value,
-                          annotation_text=f'Client {id_client} \n {var_comparaison}={var_comparaison_value}',
-                          annotation_position="top right",
-                          line_dash="dot",
-                          line_color='green',
-                          line_width=3)
+
+if not np.isnan(var_comparaison):
+    fig_comparaison.add_vline(var_comparaison_value,
+                              annotation_text=f'Client {id_client} \n {var_comparaison}={var_comparaison_value}',
+                              annotation_position="top right",
+                              line_dash="dot",
+                              line_color='green',
+                              line_width=3)
 fig_comparaison.update_layout(xaxis_title=var_comparaison,
                               title='Repartition de la variable parmis les client')
 
