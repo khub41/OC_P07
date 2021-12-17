@@ -1,16 +1,21 @@
 import mlflow
 import pandas as pd
-
+import s3fs
 import streamlit as st
 import shap
 
 import plotly.graph_objects as go
 import plotly.express as px
 
+
+fs = s3fs.S3FileSystem(anon=False)
+
 st.set_page_config(layout="wide")
 @st.cache
 def load_scaled_data():
-    return pd.read_csv("data/sample_test_scaled.csv", index_col=[0]).drop(columns=["TARGET"])
+    with fs.open('homecreditdata/data_full.csv') as file:
+        return pd.read_csv(file, index_col=[0]).drop(columns=["TARGET"])
+    # return pd.read_csv("data/sample_test_scaled.csv", index_col=[0]).drop(columns=["TARGET"])
 
 
 @st.cache
