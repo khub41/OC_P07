@@ -96,13 +96,14 @@ with col_score:
         domain={'x': [0, 1], 'y': [0, 1]},
         mode="gauge",
         value=risk,
-        title={'text': "Risk"},
+        title={'text': "Risque"},
         gauge={'axis': {'range': [None, 1]},
                'steps': [
                    {'range': [0, 0.2], 'color': "lightgreen"},
                    {'range': [0.2, 0.5], 'color': "orange"},
                    {'range': [0.5,0.8], "color": "red"},
-                   {'range': [0.8,1], "color": "black"}] ,
+                   {'range': [0.8,1], "color": "black"},] ,
+               'bar': {'color': "blue"}
                }))
 
     st.plotly_chart(fig, use_container_width=True)
@@ -135,7 +136,7 @@ with col_explanation:
     explanation_client['shap_value_abs'] = explanation_client.shap_value.map(abs)
     explanation_client['color'] = explanation_client.shap_value > 0
     explanation_client.color.replace(True, 'red', inplace=True)
-    explanation_client.color.replace(False, 'blue', inplace=True)
+    explanation_client.color.replace(False, 'green', inplace=True)
     explanation_client.sort_values('shap_value_abs', ascending=False, inplace=True)
 
 
