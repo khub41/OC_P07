@@ -172,7 +172,7 @@ if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
 fig_comparaison = px.histogram(data_raw[var_comparaison])
 
-if not np.isnan(var_comparaison):
+if not np.isnan(var_comparaison_value):
     fig_comparaison.add_vline(var_comparaison_value,
                               annotation_text=f'Client {id_client} \n {var_comparaison}={var_comparaison_value}',
                               annotation_position="top right",
