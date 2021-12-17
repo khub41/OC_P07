@@ -20,8 +20,8 @@ def load_scaled_data():
 
 @st.cache
 def load_raw_data():
-    with fs.open('homecreditdata/data_full.csv') as file:
-        return pd.read_csv(file, index_col=[0]).set_index('SK_ID_CURR')
+    with fs.open('homecreditdata/data_raw_test.csv') as file:
+        return pd.read_csv(file, index_col=[0])
     # return pd.read_csv("data/data_full.csv", index_col=[0]).set_index('SK_ID_CURR')
 
 
