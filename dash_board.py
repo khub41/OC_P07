@@ -10,6 +10,9 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 
+import app
+
+app.run_app()
 
 fs = s3fs.S3FileSystem(anon=False)
 
@@ -46,9 +49,9 @@ id_client = st.sidebar.selectbox(
 )
 
 # risk = model.predict_proba(data_scale.loc[[id_client]])[0][1]
-url = "https://homecredit-oc-p7.herokuapp.com/predict"
+# url = "https://homecredit-oc-p7.herokuapp.com/predict"
+url = " http://127.0.0.1:4141/predict"
 headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
-
 data_client = [data_scale.loc[id_client].values.tolist()]
 j_data = json.dumps(data_client)
 r = requests.post(url, data=j_data, headers=headers)

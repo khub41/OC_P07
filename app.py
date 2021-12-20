@@ -7,6 +7,7 @@ model = mlflow.sklearn.load_model(model_path)
 
 app = Flask(__name__)
 
+
 @app.route('/predict', methods=["POST"])
 def prediction():
     data = request.get_json()
@@ -15,5 +16,5 @@ def prediction():
     return jsonify(prediction)
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+def run_app():
+    app.run(debug=True, port=4141)
