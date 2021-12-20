@@ -16,5 +16,5 @@ def prediction():
     return jsonify(prediction)
 
 
-def run_app():
-    app.run(port=12345)
+if __name__ == '__main__':
+    app.run(debug=True)
