@@ -1,5 +1,8 @@
+import json
+
 import mlflow
 import pandas as pd
+import requests
 import s3fs
 import streamlit as st
 import shap
@@ -21,7 +24,7 @@ def load_scaled_data():
 @st.cache
 def load_raw_data():
     with fs.open('homecreditdata/data_raw_test.csv') as file:
-        return pd.read_csv(file, index_col=[0]).drop(columns=["TARGET"])
+        return pd.read_csv(file, index_col=[0]).drop(columns=["TARGET", "index"])
     # return pd.read_csv("data/data_full.csv", index_col=[0]).set_index('SK_ID_CURR')
 
 
@@ -42,7 +45,15 @@ id_client = st.sidebar.selectbox(
     data_scale.index
 )
 
-risk = model.predict_proba(data_scale.loc[[id_client]])[0][1]
+# risk = model.predict_proba(data_scale.loc[[id_client]])[0][1]
+url = "https://homecredit-oc-p7.herokuapp.com/predict"
+headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+
+data_client = [data_scale.loc[id_client].values.tolist()]
+j_data = json.dumps(data_client)
+r = requests.post(url, data=j_data, headers=headers)
+risk = float(r.text.split('"')[1])
+
 
 strategy = st.sidebar.selectbox(
     "Strategie",
