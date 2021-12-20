@@ -50,7 +50,7 @@ id_client = st.sidebar.selectbox(
 
 # risk = model.predict_proba(data_scale.loc[[id_client]])[0][1]
 # url = "https://homecredit-oc-p7.herokuapp.com/predict"
-url = " http://127.0.0.1:4141/predict"
+url = " http://127.0.0.1:12345/predict"
 headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
 data_client = [data_scale.loc[id_client].values.tolist()]
 j_data = json.dumps(data_client)

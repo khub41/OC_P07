@@ -17,4 +17,4 @@ def prediction():
 
 
 def run_app():
-    app.run(debug=True, port=4141)
+    app.run(debug=True, port=12345)
