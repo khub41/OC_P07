@@ -7,10 +7,6 @@ model = joblib.load(model_path)
 
 app = Flask(__name__)
 
-@app.route("/")
-def init_get():
-    pass
-
 @app.route('/predict', methods=["POST"])
 def prediction():
     data = request.get_json()
