@@ -1,5 +1,6 @@
 import json
 
+import joblib
 import mlflow
 import pandas as pd
 import requests
@@ -28,8 +29,8 @@ def load_raw_data():
     # return pd.read_csv("data/data_full.csv", index_col=[0]).set_index('SK_ID_CURR')
 
 
-model_path = 'best_model'
-model = mlflow.sklearn.load_model(model_path)
+model_path = 'best_model/model.pkl'
+model = joblib.load(model_path)
 
 
 # Create a text element and let the reader know the data is loading.

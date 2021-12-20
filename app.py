@@ -1,9 +1,9 @@
-import mlflow
+import joblib
 import numpy as np
 from flask import Flask, request, jsonify
 
-model_path = 'best_model'
-model = mlflow.sklearn.load_model(model_path)
+model_path = 'best_model/model.pkl'
+model = joblib.load(model_path)
 
 app = Flask(__name__)
 
