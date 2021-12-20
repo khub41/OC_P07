@@ -1,7 +1,7 @@
 import json
 
 import joblib
-import mlflow
+# import mlflow
 import pandas as pd
 import requests
 import s3fs
