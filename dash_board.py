@@ -142,8 +142,11 @@ with col_explanation:
     response_api = requests.post(url, json=j_data)
 
     shap_values = response_api.json().replace("\n", "").strip("[").strip(']').replace('  ', ' ').split(' ')
-    shap_values = [float(shap_value) for shap_value in shap_values]
-
+    try:
+        shap_values = [float(shap_value) for shap_value in shap_values]
+    except Exception as e:
+        print(e)
+        print(len(shap_values))
     explanation_client = pd.DataFrame({'shap_value': shap_values,
                                        'feature_name': features})
 
