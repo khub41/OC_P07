@@ -136,19 +136,14 @@ with col_explanation:
 
     url = "https://homecredit-oc-p7.herokuapp.com/explain"
     # headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
-    data_client = data_scale.loc[id_client].values
+    data_client = data_scale.loc[id_client].to_dict()
     # j_data = json.dumps(data_client)
-    j_data = {"array": data_client.tolist()}
-    response_api = requests.post(url, json=j_data)
+    # j_data = {"array": data_client.tolist()}
+    response_api = requests.post(url, json=data_client)
 
-    shap_values = response_api.json().replace("\n", "").strip("[").strip(']').replace('  ', ' ').split(' ')
-    try:
-        shap_values = [float(shap_value) for shap_value in shap_values]
-    except Exception as e:
-        print(e)
-        print(len(shap_values))
-    explanation_client = pd.DataFrame({'shap_value': shap_values,
-                                       'feature_name': features})
+
+    explanation_client = pd.DataFrame({'shap_value': response_api.json().values(),
+                                       'feature_name': response_api.json().keys()})
 
     explanation_client = explanation_client[~explanation_client.feature_name.isin(['EXT_SOURCE_1',
                                                                                    'EXT_SOURCE_2',
