@@ -22,7 +22,7 @@ def explain():
     data_client = np.array([data_client["array"]])
     explainer_shap = shap.TreeExplainer(model)
     shap_values_client = explainer_shap.shap_values(data_client)
-    print(shap_values_client)
+    # print(shap_values_client)
     return jsonify(np.array2string(shap_values_client[1][0, :]))
 
 
