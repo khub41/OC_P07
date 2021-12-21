@@ -1,6 +1,3 @@
-
-
-
 import mlflow
 import re
 
@@ -16,7 +13,6 @@ import matplotlib.pyplot as plt
 from udf import launch_models_CV, loss_score, determine_threshold
 
 # Import Data
-
 data_appli = pd.read_csv('data/data_full.csv').set_index('SK_ID_CURR')
 data_appli = data_appli[['AMT_CREDIT']]
 
@@ -59,4 +55,17 @@ f1_baseline = f1_score(labels_preds_df['label_true'], labels_preds_df['pred_thre
 matthews_baseline = matthews_corrcoef(labels_preds_df['label_true'], labels_preds_df['pred_thresh_5'])
 roc_auc_baseline = roc_auc_score(labels_preds_df['label_true'], labels_preds_df['pred_thresh_5'])
 
-losses, conf_matrix = determine_threshold(best_model_mlflow, data_test, labels_test, np.linspace(0,1,20,endpoint=True), data_appli)
+losses, conf_matrix = determine_threshold(best_model_mlflow,
+                                          data_test,
+                                          labels_test,
+                                          np.linspace(0, 1, 20, endpoint=True),
+                                          data_appli)
+
+
+rate = losses / data_appli.loc[data_test.index].AMT_CREDIT.sum()
+plt.style.use('seaborn')
+plt.plot(rate.index, (rate * 100).values, color="#ba603f", linewidth=3)
+plt.ylabel("Pertes en % de la somme prêtée")
+plt.xlabel("Seuil de décision d'exclusion")
+plt.title("Taux de pertes en fonction du seuil")
+# plt.savefig("plots/threshold.png", bbox_inches='tight', dpi=720)
