@@ -14,9 +14,9 @@ app.config['JSON_SORT_KEYS'] = False
 @app.route('/predict', methods=["POST"])
 def prediction():
     data = request.get_json()
-    prediction = np.array2string(model.predict_proba(data)[0,1])
+    prediction_value = np.array2string(model.predict_proba(data)[0, 1])
 
-    return jsonify(prediction)
+    return jsonify(prediction_value)
 
 
 @app.route('/explain', methods=["POST"])
