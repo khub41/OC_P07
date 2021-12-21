@@ -57,6 +57,14 @@ def handle_infinite_values(data):
 
 
 def handle_missing_values(data, mode=None):
+    """
+    Imputing missing values. Mode has to be specified.
+    two options : 'knn' (3 neighbors), very time consuming.
+    And 'simple' (median imputer)
+    :param data: pandas.DataFrame
+    :param mode: str
+    :return: pandas.Dataframe
+    """
     if mode is None:
         mode = 'knn'
     if mode == 'knn':
@@ -76,6 +84,13 @@ def handle_missing_values(data, mode=None):
 
 
 def scree_plot(data_scale, max_comp, savefig=False):
+    """
+    Helps visualize the gain of PCA in feature qtty, plotting variance explication
+    :param data_scale: pandas.Dataframe
+    :param max_comp: int
+    :param savefig: bool or str
+    :return: None
+    """
     pca_scree = PCA(n_components=max_comp)
     pca_scree.fit(data_scale)
     plt.style.use('fivethirtyeight')
@@ -90,12 +105,28 @@ def scree_plot(data_scale, max_comp, savefig=False):
 
 
 def reduce_dim_pca(data_scale, n_comp):
+    """
+    Transforms df using PCA
+    :param data_scale: pandas.Dataframe. Needs to be scaled
+    :param n_comp: int
+    :return:
+    """
     pca = PCA(n_components=n_comp)
     data_scale_decomp = pd.DataFrame(pca.fit_transform(data_scale))
     return data_scale_decomp, pca
 
 
 def tuning_kmeans(data, range_n_clust, experiment, n_init, max_iter, run_name='tuning'):
+    """
+    training various kmeans with a range of n_clusters. Logging into mlflow
+    :param data: pandas.Dataframe. Needs to be scaled
+    :param range_n_clust: range
+    :param experiment: str. name of experiment
+    :param n_init: int. param of kmeans
+    :param max_iter: int. param of kmeans
+    :param run_name: str. for tracability in mlflow
+    :return: None
+    """
     slh_scores = {}
     db_scores = {}
     mlflow.set_experiment(experiment)
@@ -122,6 +153,12 @@ def tuning_kmeans(data, range_n_clust, experiment, n_init, max_iter, run_name='t
 
 
 def train_dbscan(data, run_name):
+    """
+    train a dbscan model and saving the run in mlflow
+    :param data: pandas.Dataframe. Needs to be scaled
+    :param run_name: str
+    :return: None
+    """
     data_train = data.copy()
     mlflow.set_experiment('dbscan_descriptors')
     with mlflow.start_run(run_name=run_name):
@@ -148,6 +185,16 @@ def train_dbscan(data, run_name):
 
 
 def train_tsne(data, labels, perplexity=50, learning_rate=200, show=True, savefig=False):
+    """
+    Training a tsne
+    :param data: pandas.Dataframe.Needs to be scaled
+    :param labels: array-like. Labels of the population
+    :param perplexity: int. tsne param
+    :param learning_rate: float. tsne param
+    :param show: bool. to visualize plot
+    :param savefig: bool or str.
+    :return: coordinates in tsne embedding
+    """
     tsne = TSNE(init='random', random_state=41, n_jobs=-1, perplexity=perplexity, learning_rate=learning_rate)
     data_tsne = tsne.fit_transform(data)
     df_data_tsne_labels = pd.DataFrame(data_tsne, columns=['x', 'y']).merge(labels, left_index=True, right_index=True)
@@ -179,6 +226,14 @@ def train_tsne(data, labels, perplexity=50, learning_rate=200, show=True, savefi
 
 
 def re_sample(data, labels, sampler, params=None):
+    """
+    Resample the data
+    :param data: pandas.Dataframe. without the labels
+    :param labels: array-like
+    :param sampler: sampler object from imbalanced package
+    :param params: dict. params to set to sampler
+    :return: data and labels
+    """
     if params is None:
         params = {'random_state': 41}
     sampler = sampler(**params)
@@ -196,6 +251,16 @@ def plot_perf_balancing_strategy(data_train,
                                  labels_test,
                                  strategies=np.arange(0.3, 1.1, 0.1),
                                  savefig=False):
+    """
+    Visualisation of scores when changing the sampling method. using a basic RandomForestClassifier and f1 score
+    :param data_train: pandas.Dataframe. training features
+    :param labels_train: array-like. labels of training set
+    :param data_test: pandas.Dataframe. testing features
+    :param labels_test: array-like. labels of testing set
+    :param strategies: array-like. floats representing N(1_class)/N(0_class)
+    :param savefig: bool or str.
+    :return: None
+    """
     strategies[-1] = 1
     f1_positives = []
     f1_negatives = []
@@ -228,12 +293,6 @@ def plot_perf_balancing_strategy(data_train,
     plt.show()
 
 
-# def under_sample(data, labels, random_state=41):
-#     sampler = ClusterCentroids(random_state=random_state)
-#     data_res, labels_res = sampler.fit_resample(data, labels)
-#     return data_res, labels_res
-# # MODELING FUNCTIONS
-
 def launch_models_CV(
         data_train,
         labels,
@@ -244,6 +303,23 @@ def launch_models_CV(
         favorite_scoring=None,
         comment=None,
         n_jobs=-1):
+    """
+    Script handling grid search CV tuning. models params have to be json style
+
+    :param data_train: pandas.Dataframe
+    :param labels: array-like
+    :param models_params: dict. json style with shape: {"name_model" : {"params": {"param_name":[values],...},
+                                                                        "estimator": Estimator()},
+                                                        "name_model_2: ...}
+    :param default_mode: Ignores params and trains estimators with default params
+    :param folds: number of folds for CV
+    :param scorings: dict. shape : {"name_score": scorer, ...}
+    :param favorite_scoring: str. score used to choose best model
+    :param comment: str. name of run
+    :param n_jobs: int. number of cores for paralel runs. -1 means all (freezes computer a bit)
+    :return: scores
+    """
+
     # Iterate on model types
 
     best_estimator_favourite_scores = {}
@@ -369,7 +445,7 @@ def compute_loss(row, data_appli):
     - We assume that a default costs half the price of the credit
     - Say no to a bad client brings a null loss
 
-    We'll assume the interests are 1.5%
+    We'll assume the interests are 5%
 
     This approach is naive, this function needs to be tuned with an expert in Home credit and banking administration
 
@@ -381,7 +457,7 @@ def compute_loss(row, data_appli):
     amount_credit = data_appli.loc[row.name].AMT_CREDIT
 
     if row.decision_quali == 'BPA':
-        return - 0.15 * amount_credit
+        return - 0.05 * amount_credit
     elif row.decision_quali == 'BPE':
         return 0
     elif row.decision_quali == 'MPA':
