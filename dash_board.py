@@ -93,7 +93,7 @@ else:
 
 
 st.header(
-    f"Avec une stratégie {strategy.lower()}, le modèle {litteral_decision.upper()} the client"
+    f"Avec une stratégie {strategy.lower()}, le modèle {litteral_decision.upper()} le client"
 )
 
 
@@ -124,15 +124,27 @@ with col_explanation:
     st.header("Explication")
     st.caption("Les variables vertes font baisser le risque, les rouges l'augmentent!")
 
-    explainer = shap.TreeExplainer(model)
-
-    explainer_shap = shap.TreeExplainer(model)
     data_scale_client = data_scale.loc[[id_client]]
     data_raw_client = data_raw.loc[[id_client]]
     features = data_scale_client.columns.values
-    shap_values_client = explainer_shap.shap_values(data_scale_client)
 
-    explanation_client = pd.DataFrame({'shap_value': shap_values_client[1][0, :],
+    # explainer = shap.TreeExplainer(model)
+    # explainer_shap = shap.TreeExplainer(model)
+    #
+
+    # shap_values_client = explainer_shap.shap_values(data_scale_client)
+
+    url = "https://homecredit-oc-p7.herokuapp.com/explain"
+    headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
+    data_client = data_scale.loc[id_client].values.tolist()
+    # j_data = json.dumps(data_client)
+    j_data = {"array": data_client.tostring()}
+    response_api = requests.post(url, data=j_data)
+
+    shap_values = response_api.json().replace("\n", "").strip("[").strip(']').replace('  ', ' ').split(' ')
+    shap_values = [float(shap_value) for shap_value in shap_values]
+
+    explanation_client = pd.DataFrame({'shap_value': shap_values,
                                        'feature_name': features})
 
     explanation_client = explanation_client[~explanation_client.feature_name.isin(['EXT_SOURCE_1',
