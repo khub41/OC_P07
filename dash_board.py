@@ -11,10 +11,11 @@ import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
 
-
 fs = s3fs.S3FileSystem(anon=False)
 
 st.set_page_config(layout="wide")
+
+
 @st.cache
 def load_scaled_data():
     with fs.open('homecreditdata/data_test_scaled.csv') as file:
@@ -27,6 +28,7 @@ def load_raw_data():
     with fs.open('homecreditdata/data_raw_test.csv') as file:
         return pd.read_csv(file, index_col=[0]).drop(columns=["TARGET", "index"])
     # return pd.read_csv("data/data_full.csv", index_col=[0]).set_index('SK_ID_CURR')
+
 
 # Importing Data from AWS s3
 data_scale = load_scaled_data()
@@ -53,17 +55,16 @@ strategy = st.sidebar.selectbox(
 )
 
 if strategy.lower() == 'normale':
-    threshold = 0.5
+    threshold = 0.6
 
 elif strategy.lower() == 'aggressive':
     threshold = 0.8
 
 elif strategy.lower() == 'prudente':
-    threshold = 0.2
+    threshold = 0.4
 
 else:
-    threshold = 0.5
-
+    threshold = 0.6
 
 if risk > threshold:
     decision = 1
@@ -71,7 +72,6 @@ if risk > threshold:
 else:
     decision = 0
     litteral_decision = "accepte"
-
 
 # The user chooses how many features he wants in the explanation graph
 nb_features_explain = st.sidebar.slider(
@@ -93,10 +93,8 @@ st.header(
 # Init of two columns, one for a gauge showing the risk, the other for the explanation bar graph
 col_score, col_explanation = st.columns(2)
 
-
 with col_score:
-
-    st.header(f"Risque calculé : {round(risk*100, 2)} %")
+    st.header(f"Risque calculé : {round(risk * 100, 2)} %")
 
     fig = go.Figure(go.Indicator(
         domain={'x': [0, 1], 'y': [0, 1]},
@@ -105,10 +103,10 @@ with col_score:
         title={'text': "Risque"},
         gauge={'axis': {'range': [None, 1]},
                'steps': [
-                   {'range': [0, 0.2], 'color': "green"},
-                   {'range': [0.2, 0.5], 'color': "orange"},
-                   {'range': [0.5,0.8], "color": "red"},
-                   {'range': [0.8,1], "color": "black"},] ,
+                   {'range': [0, 0.4], 'color': "green"},
+                   {'range': [0.4, 0.6], 'color': "orange"},
+                   {'range': [0.6, 0.8], "color": "red"},
+                   {'range': [0.8, 1], "color": "black"}, ],
                'bar': {'color': "blue"}
                }))
 
@@ -154,26 +152,24 @@ with col_explanation:
                                        + explanation_client.raw_data.round(2).astype(str)
     # Setup figure
     fig = go.Figure(go.Bar(x=explanation_client['shap_value'],
-                     y=explanation_client['bar_labels'],
-                     orientation='h',
-                     marker={'color': explanation_client['color']},
-                     ),
-              )
+                           y=explanation_client['bar_labels'],
+                           orientation='h',
+                           marker={'color': explanation_client['color']},
+                           ),
+                    )
     fig.update_layout(xaxis_title="Influence sur le niveau de risque",
                       )
 
     st.plotly_chart(fig,
-
-
-        use_container_width=True)
+                    use_container_width=True)
 
 # Aditional information about client features
 st.header('En savoir plus sur mon client')
 # About a feature
 var_comparaison = st.selectbox(
-        "Variable à explorer",
-        data_raw.columns
-    )
+    "Variable à explorer",
+    data_raw.columns
+)
 # Getting the value and showing the value
 var_comparaison_value = data_raw.loc[id_client][var_comparaison]
 st.subheader(f"{var_comparaison}={var_comparaison_value}")
@@ -183,7 +179,7 @@ if var_comparaison == 'index':
 
 # Setup histogram
 fig_comparaison = px.histogram(data_raw[var_comparaison])
-# PLotting vertical line for position on clients feature compared to others
+# PLotting vertical line for position of client's feature compared to others
 if not np.isnan(var_comparaison_value):
     fig_comparaison.add_vline(var_comparaison_value,
                               annotation_text=f'Client {id_client} \n {var_comparaison}={var_comparaison_value}',
@@ -192,7 +188,7 @@ if not np.isnan(var_comparaison_value):
                               line_color='green',
                               line_width=3)
 fig_comparaison.update_layout(xaxis_title=var_comparaison,
-                              title='Repartition de la variable parmis les client')
+                              title='Repartition de la variable parmis les clients')
 
 st.plotly_chart(fig_comparaison,
                 use_container_width=True)
