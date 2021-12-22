@@ -194,8 +194,45 @@ st.caption(f"{description_var.Description} from {description_var.table_pretty}")
 if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
 
+use_mask = st.checkbox("Utiliser un filtre", value=False)
+if use_mask:
+    col_filter, col_logic, col_filter_value = st.columns(0)
+
+    with col_filter:
+        var_filter = st.selectbox('Variable à filtrer',
+                                  data_raw.columns)
+    with col_logic:
+        logic_operator = st.selectbox('Opérateur logique',
+                                      ['>', '>=', "=", "<", '<='],
+                                      index=0)
+    with col_filter_value:
+        col_describe = data_raw[var_filter].describe()
+
+        filter_value = st.number_input("Valeur",
+                                       min_value=col_describe.loc['min'],
+                                       max_value=col_describe.loc['max'],
+                                       value=col_describe.loc['50%'])
+
 # Setup histogram
-fig_comparaison = px.histogram(data_raw[var_comparaison])
+if use_mask:
+    if logic_operator == '>':
+        masked_data = data_raw[data_raw[var_filter] > filter_value]
+        fig_comparaison = px.histogram(masked_data[var_comparaison])
+    elif logic_operator == ">=":
+        masked_data = data_raw[data_raw[var_filter] >= filter_value]
+        fig_comparaison = px.histogram(masked_data[var_comparaison])
+    elif logic_operator == "=":
+        masked_data = data_raw[data_raw[var_filter] == filter_value]
+        fig_comparaison = px.histogram(masked_data[var_comparaison])
+    elif logic_operator == "<":
+        masked_data = data_raw[data_raw[var_filter] < filter_value]
+        fig_comparaison = px.histogram(masked_data[var_comparaison])
+    elif logic_operator == "<=":
+        masked_data = data_raw[data_raw[var_filter] <= filter_value]
+        fig_comparaison = px.histogram(masked_data[var_comparaison])
+else:
+    fig_comparaison = px.histogram(data_raw[var_comparaison])
+
 # PLotting vertical line for position of client's feature compared to others
 if not np.isnan(var_comparaison_value):
     fig_comparaison.add_vline(var_comparaison_value,
