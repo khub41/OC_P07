@@ -186,7 +186,7 @@ var_comparaison_value = data_raw.loc[id_client][var_comparaison]
 st.subheader(f"{var_comparaison}={var_comparaison_value}")
 
 description_var = column_descriptions.loc[var_comparaison]
-if type(description_var) == pd.core.frame.Dataframe:
+if type(description_var) == pd.core.frame.DataFrame:
     description_var = description_var.iloc[0]
 
 st.caption(f"{description_var.Description} from {description_var.table_pretty}")
