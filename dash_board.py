@@ -119,7 +119,8 @@ with col_score:
         gauge={'axis': {'range': [None, 1],
                         'tickmode': "array",
                         'tickvals': [0.4, 0.6, 0.75],
-                        'ticktext': ['Seuil Prudence', 'Seuil Normal', 'Seuil Agressif']},
+                        'ticktext': ['Seuil Prudence', 'Seuil Normal', 'Seuil Agressif'],
+                        'tickangle': [0]*3},
                'steps': [
                    {'range': [0, 0.4], 'color': "green"},
                    {'range': [0.4, 0.6], 'color': "orange"},
