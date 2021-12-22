@@ -184,7 +184,12 @@ var_comparaison = st.selectbox(
 # Getting the value and showing the value
 var_comparaison_value = data_raw.loc[id_client][var_comparaison]
 st.subheader(f"{var_comparaison}={var_comparaison_value}")
-st.caption(f"{column_descriptions.loc[var_comparaison].Description} from {column_descriptions.loc[var_comparaison].table_pretty}")
+
+description_var = column_descriptions.loc[var_comparaison]
+if type(description_var) == pd.core.frame.Dataframe:
+    description_var = description_var.iloc[0]
+
+st.caption(f"{description_var.Description} from {description_var.table_pretty}")
 # Init to AMT_CREDIT
 if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
