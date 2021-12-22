@@ -62,7 +62,7 @@ risk = float(r.text.split('"')[1])
 
 # The user chooses the strategy (it sets the threshold accordingly)
 strategy = st.sidebar.selectbox(
-    "Strategie",
+    "Stratégie",
     ["Prudente", "Normale", "Agressive"]
 )
 
@@ -96,7 +96,7 @@ nb_features_explain = st.sidebar.slider(
 )
 
 # Title on the main page
-st.title("Outil d'aide à la décision d'octroiement des prêts bancaires")
+st.title("Prêt à dépenser : aide à la décision")
 
 # Decision is displayed based on the risk and the strategy
 # st.header(
@@ -193,11 +193,15 @@ var_comparaison = st.selectbox(
 var_comparaison_value = data_raw.loc[id_client][var_comparaison]
 st.subheader(f"{var_comparaison}={var_comparaison_value}")
 
-description_var = column_descriptions.loc[var_comparaison]
-if type(description_var) == pd.core.frame.DataFrame:
-    description_var = description_var.iloc[0]
+try:
+    description_var = column_descriptions.loc[var_comparaison]
+    if type(description_var) == pd.core.frame.DataFrame:
+        description_var = description_var.iloc[0]
+    st.caption(f"{description_var.Description} from '{description_var.table_pretty}' file")
+except KeyError:
+    st.caption("Pas de description disponible pour cette variable")
 
-st.caption(f"{description_var.Description} from '{description_var.table_pretty}' file")
+
 # Init to AMT_CREDIT
 if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
@@ -254,7 +258,7 @@ if not np.isnan(var_comparaison_value):
                               line_color='green',
                               line_width=3)
 fig_comparaison.update_layout(xaxis_title=var_comparaison,
-                              title='Repartition de la variable parmis les clients')
+                              title='Repartition de la variable parmi les clients')
 
 st.plotly_chart(fig_comparaison,
                 use_container_width=True)
