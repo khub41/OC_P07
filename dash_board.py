@@ -189,18 +189,21 @@ description_var = column_descriptions.loc[var_comparaison]
 if type(description_var) == pd.core.frame.DataFrame:
     description_var = description_var.iloc[0]
 
-st.caption(f"{description_var.Description} from {description_var.table_pretty}")
+st.caption(f"{description_var.Description} from '{description_var.table_pretty}' file")
 # Init to AMT_CREDIT
 if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
 
+# Using a mask to filter clients in the histogram
 use_mask = st.checkbox("Utiliser un filtre", value=False)
 if use_mask:
+    # user interface for the filter
     col_filter, col_logic, col_filter_value = st.columns(3)
 
     with col_filter:
         var_filter = st.selectbox('Variable à filtrer',
-                                  data_raw.columns)
+                                  data_raw.columns,
+                                  index=4)
     with col_logic:
         logic_operator = st.selectbox('Opérateur logique',
                                       ['>', '>=', "=", "<", '<='],
@@ -214,6 +217,7 @@ if use_mask:
                                        value=col_describe.loc['50%'])
 
 # Setup histogram
+# filtering
 if use_mask:
     if logic_operator == '>':
         masked_data = data_raw[data_raw[var_filter] > filter_value]
@@ -233,7 +237,7 @@ if use_mask:
 else:
     fig_comparaison = px.histogram(data_raw[var_comparaison])
 
-# PLotting vertical line for position of client's feature compared to others
+# Plotting vertical line for position of client's feature compared to others
 if not np.isnan(var_comparaison_value):
     fig_comparaison.add_vline(var_comparaison_value,
                               annotation_text=f'Client {id_client} \n {var_comparaison}={var_comparaison_value}',
@@ -246,24 +250,3 @@ fig_comparaison.update_layout(xaxis_title=var_comparaison,
 
 st.plotly_chart(fig_comparaison,
                 use_container_width=True)
-
-# col_var_x, col_var_y = st.columns(2)
-#
-# with col_var_x:
-#     var_x = st.selectbox(
-#         "Variable à tracer en X",
-#         data_raw.columns
-#     )
-#
-# with col_var_y:
-#     var_y = st.selectbox(
-#         "Variable à tracer en Y",
-#         data_raw.columns
-#     )
-#
-#
-# st.plotly_chart(
-#     go.Figure(go.Scatter(
-#                          x=data_raw[var_x],
-#                          y=data_raw[var_y]))
-# )
