@@ -102,7 +102,7 @@ st.title("Outil d'aide à la décision d'octroiement des prêts bancaires")
 # st.header(
 #     f"Avec une stratégie {strategy.lower()}, le modèle {litteral_decision.upper()} le client"
 # )
-st.markdown(f"<center style='font-family:Verdana ; color:{color_decision}; font-size: 60px;'>{litteral_decision.upper()}</center>",
+st.markdown(f"<center style='font-family:@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&display=swap') ; color:{color_decision}; font-size: 60px;'>{litteral_decision.upper()}</center>",
             unsafe_allow_html=True)
 
 # Init of two columns, one for a gauge showing the risk, the other for the explanation bar graph
