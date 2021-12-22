@@ -26,10 +26,25 @@ def load_raw_data():
     # return pd.read_csv("data/data_full.csv", index_col=[0]).set_index('SK_ID_CURR')
 
 
+@st.cache
+def load_columns_descriptions():
+    with fs.open('homecreditdata/HomeCredit_columns_description.csv') as file:
+        desc = pd.read_csv(file, index_col=[0], encoding_errors='ignore')
+        desc['table_pretty'] = desc.Table.replace({'application_{train|test}.csv': "application",
+                                                   'bureau.csv': "bureau",
+                                                   'bureau_balance.csv': "bureau balance",
+                                                   'POS_CASH_balance.csv': "POS cash balance",
+                                                   'credit_card_balance.csv': "credit card balance",
+                                                   'previous_application.csv': "previous application",
+                                                   'installments_payments.csv': "installments payments"})
+        desc = desc.set_index('Row')
+        return desc
+
+
 # Importing Data from AWS s3
 data_scale = load_scaled_data()
 data_raw = load_raw_data()
-
+column_descriptions = load_columns_descriptions()
 # The user choses a client in the data base
 id_client = st.sidebar.selectbox(
     "ID du client",
@@ -169,6 +184,7 @@ var_comparaison = st.selectbox(
 # Getting the value and showing the value
 var_comparaison_value = data_raw.loc[id_client][var_comparaison]
 st.subheader(f"{var_comparaison}={var_comparaison_value}")
+st.caption(f"{column_descriptions.loc[var_comparaison].Description} from {column_descriptions.loc[var_comparaison].table_pretty}")
 # Init to AMT_CREDIT
 if var_comparaison == 'index':
     var_comparaison = "AMT_CREDIT"
