@@ -6,6 +6,7 @@ import streamlit as st
 import numpy as np
 import plotly.graph_objects as go
 import plotly.express as px
+import streamlit.components.v1
 
 fs = s3fs.S3FileSystem(anon=False)
 
@@ -101,7 +102,11 @@ st.title("Outil d'aide à la décision d'octroiement des prêts bancaires")
 # st.header(
 #     f"Avec une stratégie {strategy.lower()}, le modèle {litteral_decision.upper()} le client"
 # )
-st.markdown(f"<style> @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&display=swap'); <center style=font-family:'IBM Plex Sans', sans-serif; color:{color_decision}; font-size: 35px;'>{litteral_decision.upper()}</center></style>",
+st.components.v1.html("""<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@700&display=swap');
+</style>""")
+
+st.markdown(f"<center style=font-family:'IBM Plex Sans', sans-serif; color:{color_decision}; font-size: 35px;'>{litteral_decision.upper()}</center>",
             unsafe_allow_html=True)
 
 # Init of two columns, one for a gauge showing the risk, the other for the explanation bar graph
