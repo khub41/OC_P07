@@ -196,7 +196,7 @@ if var_comparaison == 'index':
 
 use_mask = st.checkbox("Utiliser un filtre", value=False)
 if use_mask:
-    col_filter, col_logic, col_filter_value = st.columns(0)
+    col_filter, col_logic, col_filter_value = st.columns(3)
 
     with col_filter:
         var_filter = st.selectbox('Variable à filtrer',
