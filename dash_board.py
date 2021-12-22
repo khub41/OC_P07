@@ -54,7 +54,7 @@ if strategy.lower() == 'normale':
     threshold = 0.6
 
 elif strategy.lower() == 'aggressive':
-    threshold = 0.8
+    threshold = 0.75
 
 elif strategy.lower() == 'prudente':
     threshold = 0.4
@@ -101,8 +101,8 @@ with col_score:
                'steps': [
                    {'range': [0, 0.4], 'color': "green"},
                    {'range': [0.4, 0.6], 'color': "orange"},
-                   {'range': [0.6, 0.8], "color": "red"},
-                   {'range': [0.8, 1], "color": "black"}, ],
+                   {'range': [0.6, 0.75], "color": "red"},
+                   {'range': [0.75, 1], "color": "black"}, ],
                'bar': {'color': "blue"}
                }))
 
