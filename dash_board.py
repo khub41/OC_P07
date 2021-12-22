@@ -79,11 +79,12 @@ else:
 
 if risk > threshold:
     decision = 1
-    litteral_decision = "rejette"
+    litteral_decision = "rejetté"
+    color_decision = 'Red'
 else:
     decision = 0
-    litteral_decision = "accepte"
-
+    litteral_decision = "accepté"
+    color_decision = 'Green'
 # The user chooses how many features he wants in the explanation graph
 nb_features_explain = st.sidebar.slider(
     label='Nombre de critères pour expliquer la décision',
@@ -97,10 +98,10 @@ nb_features_explain = st.sidebar.slider(
 st.title("Outil d'aide à la décision d'octroiement des prêts bancaires")
 
 # Decision is displayed based on the risk and the strategy
-st.header(
-    f"Avec une stratégie {strategy.lower()}, le modèle {litteral_decision.upper()} le client"
-)
-
+# st.header(
+#     f"Avec une stratégie {strategy.lower()}, le modèle {litteral_decision.upper()} le client"
+# )
+st.markdown(f"<p style='font-family:Arial; color:{color_decision}; font-size: 35px;'>{litteral_decision.upper()}</p>")
 # Init of two columns, one for a gauge showing the risk, the other for the explanation bar graph
 col_score, col_explanation = st.columns(2)
 
