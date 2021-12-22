@@ -81,3 +81,15 @@ client_decision_explained = get_explanation(200999, best_model_mlflow, strategy=
 #                 show=False,
 #                 matplotlib=True).savefig('plots_storage/idmut_{}.png'.format(str(id_mut_force_plot)),
 #                                          bbox_inches='tight')
+
+
+
+# Global importance
+
+df_importance = pd.Series(best_model_mlflow.feature_importances_, index=best_model_mlflow.feature_name_)
+df_importance.sort_values(ascending=False, inplace=True)
+df_importance_top = df_importance.head(15)
+df_importance_top.sort_values(ascending=True, inplace=True)
+plt.barh(df_importance_top.index,
+         df_importance_top.values,
+         color=plt.get_cmap("viridis").colors[0::round(256/15) + 1])
