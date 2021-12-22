@@ -63,13 +63,13 @@ risk = float(r.text.split('"')[1])
 # The user chooses the strategy (it sets the threshold accordingly)
 strategy = st.sidebar.selectbox(
     "Strategie",
-    ["Prudente", "Normale", "Aggressive"]
+    ["Prudente", "Normale", "Agressive"]
 )
 
 if strategy.lower() == 'normale':
     threshold = 0.6
 
-elif strategy.lower() == 'aggressive':
+elif strategy.lower() == 'agressive':
     threshold = 0.75
 
 elif strategy.lower() == 'prudente':
@@ -116,7 +116,10 @@ with col_score:
         mode="gauge",
         value=risk,
         title={'text': "Risque"},
-        gauge={'axis': {'range': [None, 1]},
+        gauge={'axis': {'range': [None, 1],
+                        'tickmode': "array",
+                        'tickvals': [0.4, 0.6, 0.75],
+                        'ticktext': ['Seuil Prudence', 'Seuil Normal', 'Seuil Agressif']},
                'steps': [
                    {'range': [0, 0.4], 'color': "green"},
                    {'range': [0.4, 0.6], 'color': "orange"},
