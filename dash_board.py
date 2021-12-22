@@ -120,7 +120,7 @@ with col_score:
                         'tickmode': "array",
                         'tickvals': [0.4, 0.6, 0.75],
                         'ticktext': ['Seuil Prudence', 'Seuil Normal', 'Seuil Agressif'],
-                        'tickangle': [0]*3},
+                        'tickangle': 0},
                'steps': [
                    {'range': [0, 0.4], 'color': "green"},
                    {'range': [0.4, 0.6], 'color': "orange"},
